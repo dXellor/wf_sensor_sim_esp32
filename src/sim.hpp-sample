@@ -1,0 +1,51 @@
+#ifndef SIM_HPP
+#define SIM_HPP
+
+#include <Arduino.h>
+#include <Wire.h>
+#include <WiFi.h>
+#include <AsyncMqttClient.h>
+#include <LiquidCrystal_I2C.h>
+#include <ezButton.h>
+
+#define SSID "NETWORK SSID"                                 // Network SSID
+#define PASSWORD "WIFI_PWD"                                 // WiFi Password
+#define MQTT_BROKER IPAddress()                             // Ip address of MQTT broker
+#define MQTT_BROKER_PORT "PORT"
+
+#define MQTT_TOPIC_1 "wf_sensor/value1"                     // MQTT Topics
+#define MQTT_TOPIC_2 "wf_sensor/value2"
+#define MQTT_TOPIC_3 "wf_sensor/value3"
+
+#define RPIN 17                                             // WF sensor input pin 
+#define BUTTON_1 25                                         // Button input pin (Navigation)
+#define BUTTON_2 26                                         // Button input pin (Reset)
+#define BUTTON_DEBOUNCE_TIME 150
+
+#define LCD_ADDRESS 0x3F                                    // I2C default address
+
+//Variables
+extern long current_time;
+extern long last_measure;
+extern long reset_timer;
+extern bool reset_pressed;
+
+//Obj
+extern LiquidCrystal_I2C lcd;              
+extern AsyncMqttClient mqttclient;
+extern TimerHandle_t mqttReconnectTimer;
+extern TimerHandle_t wifiReconnectTimer;
+
+extern ezButton nav_button;
+extern ezButton reset_button;
+
+//Functions
+void connect_to_wifi();                                           
+void connectToMqtt();
+void WiFiEvent(WiFiEvent_t event);
+void onMqttConnect(bool sessionPresent);
+void onMqttDisconnect(AsyncMqttClientDisconnectReason reason);
+void onMqttPublish(uint16_t packetId);
+void comb_print(String text, short cursor, short row);            // Serial + LCD print
+
+#endif
